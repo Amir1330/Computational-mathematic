@@ -75,29 +75,36 @@ def find_eigenvalues_2x2(matrix):
     eigenvalue2 = (-b - discriminant) / (2*a)
     return eigenvalue1, eigenvalue2
 
+
 def characteristic_polynomial_3x3(matrix):
     a = -1
-    b = (matrix[0][0] + matrix[1][1] + matrix[2][2])
+    b = matrix[0][0] + matrix[1][1] + matrix[2][2]
     c = (matrix[0][0]*matrix[1][1] + matrix[0][0]*matrix[2][2] + matrix[1][1]*matrix[2][2] -
-         matrix[0][1]*matrix[1][0] - matrix[0][2]*matrix[2][0] - matrix[1][2]*matrix[2][1])
+    matrix[0][1]*matrix[1][0] - matrix[0][2]*matrix[2][0] - matrix[1][2]*matrix[2][1])
     d = determinant_3x3(matrix)
     return a, b, c, d
 
+def solve_cubic(a, b, c, d):
+    # aλ^3 + bλ^2 + cλ + d = 0
+    p = -b / (3 * a)
+    q = p**3 + (b*c - 3*a*d) / (6 * a**2)
+    r = c / (3 * a)
+    discriminant = q**2 + (r - p**2)**3
+
+    s = cmath.sqrt(q**2 + (r - p**2)**3)
+    t1 = (q + s)**(1/3)
+    t2 = (q - s)**(1/3)
+
+    root1 = t1 + t2 + p
+    root2 = -(t1 + t2) / 2 + p + cmath.sqrt(3) * (t1 - t2) / 2 * 1j
+    root3 = -(t1 + t2) / 2 + p - cmath.sqrt(3) * (t1 - t2) / 2 * 1j
+    return root1, root2, root3
+
+
 def find_eigenvalues_3x3(matrix):
     a, b, c, d = characteristic_polynomial_3x3(matrix)
-    # aλ^3 + bλ^2 + cλ + d = 0
-    p = (3*a*c - b**2) / (3*a**2)
-    q = (2*b**3 - 9*a*b*c + 27*a**2*d) / (27*a**3)
-    discriminant = (q**2) / 4 + (p**3) / 27
-    u1 = (-q / 2 + cmath.sqrt(discriminant))**(1/3)
-    u2 = (-q / 2 - cmath.sqrt(discriminant))**(1/3)
-    omega = cmath.exp(2 * cmath.pi * 1j / 3)
-
-    eigenvalue1 = u1 + u2 - b / (3*a)
-    eigenvalue2 = u1 * omega + u2 * omega**2 - b / (3*a)
-    eigenvalue3 = u1 * omega**2 + u2 * omega - b / (3*a)
-
-    return eigenvalue1, eigenvalue2, eigenvalue3
+    eigenvalues = solve_cubic(a, b, c, d)
+    return eigenvalues
 
 
 def get_minor(matrix, row, col):
