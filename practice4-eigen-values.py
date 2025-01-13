@@ -90,6 +90,7 @@ def solve_cubic(a, b, c, d):
     q = p**3 + (b*c - 3*a*d) / (6 * a**2)
     r = c / (3 * a)
     discriminant = q**2 + (r - p**2)**3
+    # x^3 + qx + r = 0
 
     s = cmath.sqrt(q**2 + (r - p**2)**3)
     t1 = (q + s)**(1/3)
@@ -144,6 +145,29 @@ def inverse_3x3(matrix):
     result = multiply_matrix_by_scalar(cofacM, 1/det)
     return result
 
+def find_eigenvectors_2x2(matrix):
+    eigenvalues = find_eigenvalues_2x2(matrix)
+    eigenvectors = []
+
+    for eigenvalue in eigenvalues:
+        a, b = matrix[0][0] - eigenvalue, matrix[0][1]
+        c, d = matrix[1][0], matrix[1][1] - eigenvalue
+
+        # Solving (a, b) * (x, y).T = 0
+        if b != 0:
+            x = 1
+            y = -a / b
+        elif d != 0:
+            x = -c / d
+            y = 1
+        else:
+            x, y = 1, 0  # default eigenvector for zero eigenvalue
+
+        eigenvector = [x, y]
+        eigenvectors.append(eigenvector)
+
+    return eigenvectors
+
 
 
 # MAIN
@@ -178,4 +202,11 @@ if inverse:
     print("Inverse matrix:")
     for row in inverse:
         print(row)
+print('\n')
+
+eigenvectors2x2 = find_eigenvectors_2x2(matrix)
+if eigenvectors2x2:
+    print("eigenvector for 2x2:")
+    for eigenvector in eigenvectors2x2:
+        print(eigenvector)
 print('\n')
